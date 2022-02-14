@@ -5,7 +5,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \ 
     apt-get -y install --no-install-recommends wget software-properties-common build-essential python3-pip
 
-RUN  export DEBIAN_FRONTEND=noninteractive && \
+RUN export DEBIAN_FRONTEND=noninteractive && \
     wget -qO - https://qgis.org/downloads/qgis-2021.gpg.key | gpg --no-default-keyring --keyring gnupg-ring:/etc/apt/trusted.gpg.d/qgis-archive.gpg --import || true  && \
     chmod a+r /etc/apt/trusted.gpg.d/qgis-archive.gpg && \
     add-apt-repository "deb https://qgis.org/ubuntu `lsb_release -c -s` main" && \
@@ -19,16 +19,22 @@ RUN apt-get clean autoclean && \
 RUN pip install --no-cache-dir pytest pytest-qgis pytest-cov pillow flake8 mypy pycodestyle yapf pb_tool pytest-qt 
 # pytest-xvfb
 
+ENV DEBIAN_FRONTEND=noninteractive
+ENV QT_QPA_PLATFORM=offscreen
+ENV XDG_RUNTIME_DIR=/tmp
+ENV PYTHONPATH=/usr/share/qgis/python/plugins:/usr/share/qgis/python
+
 RUN printenv
+WORKDIR /settings
+RUN env | sort > env.BASE
+
+
 
 FROM scratch 
 
 COPY --from=builder / /
 
-ENV HOME=/root
-ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-ENV PWD=/
-ENV DEBIAN_FRONTEND=noninteractive
-ENV QT_QPA_PLATFORM=offscreen
-ENV XDG_RUNTIME_DIR=/tmp
-ENV PYTHONPATH=/usr/share/qgis/python/plugins:/usr/share/qgis/python
+RUN set -eux ; \
+    source ./settings/env.BASE
+
+

@@ -11,14 +11,11 @@ RUN apt-get clean autoclean && \
 RUN pip install --no-cache-dir pytest-xdist
 # pytest-xvfb
 
+
+
 FROM scratch 
 
 COPY --from=builder / /
 
-ENV HOME=/root
-ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-ENV PWD=/
-ENV DEBIAN_FRONTEND=noninteractive
-ENV QT_QPA_PLATFORM=offscreen
-ENV XDG_RUNTIME_DIR=/tmp
-ENV PYTHONPATH=/usr/share/qgis/python/plugins:/usr/share/qgis/python
+RUN set -eux ; \
+    source ./settings/env.BASE
