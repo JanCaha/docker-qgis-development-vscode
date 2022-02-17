@@ -28,3 +28,11 @@ jobs:
           context: .
           push: true
           tags: cahik/vscode-ubuntu-qgis-testing:v2
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          file: "{{defaultContext}}/mapshaper/Dockerfile"
+          context: .
+          push: true
+          tags: cahik/vscode-ubuntu-qgis-testing:mapshaper
