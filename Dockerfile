@@ -1,8 +1,7 @@
 ARG VARIANT=focal
 FROM mcr.microsoft.com/vscode/devcontainers/base:${VARIANT}
 
-RUN export DEBIAN_FRONTEND=noninteractive && \
-    apt-get update && \ 
+RUN export DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get -y install --no-install-recommends wget software-properties-common build-essential python3-pip && \
     wget -qO - https://qgis.org/downloads/qgis-2021.gpg.key | gpg --no-default-keyring --keyring gnupg-ring:/etc/apt/trusted.gpg.d/qgis-archive.gpg --import || true  && \
     chmod a+r /etc/apt/trusted.gpg.d/qgis-archive.gpg && \
