@@ -4,8 +4,6 @@ RUN apt-get update && \
     apt install -y nodejs npm && \
     npm install -g mapshaper
 
-RUN pip install --no-cache-dir pytest-xdist
-
 ENV DEBIAN_FRONTEND=noninteractive
 ENV QT_QPA_PLATFORM=offscreen
 ENV XDG_RUNTIME_DIR=/tmp
