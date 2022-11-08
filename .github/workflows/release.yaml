@@ -1,7 +1,9 @@
 name: Publish Docker image
 
 on:
-  push
+  schedule:
+    - cron: "* * 1 * *"
+  push 
 
 jobs:
 
