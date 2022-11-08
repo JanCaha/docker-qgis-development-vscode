@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/vscode/devcontainers/base:${VARIANT}
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
-    apt-get -y install --no-install-recommends wget software-properties-common build-essential python3-pip && \
+    apt-get -y install --no-install-recommends wget software-properties-common build-essential ca-certificates python3-pip && \
     wget -qO - https://download.qgis.org/downloads/qgis-archive-keyring.gpg | gpg --no-default-keyring --keyring gnupg-ring:/etc/apt/trusted.gpg.d/qgis-archive.gpg --import || true  && \
     chmod a+r /etc/apt/trusted.gpg.d/qgis-archive.gpg && \
     add-apt-repository "deb https://qgis.org/ubuntu `lsb_release -c -s` main" && \
