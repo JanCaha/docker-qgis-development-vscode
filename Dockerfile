@@ -1,24 +1,40 @@
 ARG VARIANT=focal
 FROM mcr.microsoft.com/vscode/devcontainers/base:${VARIANT}
 
-RUN export DEBIAN_FRONTEND=noninteractive && \
-    apt-get update && \
-    apt-get -y install --no-install-recommends wget software-properties-common build-essential ca-certificates python3-pip 
-
-RUN KEYRING=/usr/share/keyrings/qgis-archive-keyring.gpg && \
+RUN sudo gpg -k && \
+    KEYRING=/usr/share/keyrings/qgis-archive-keyring.gpg && \
     wget -O $KEYRING https://download.qgis.org/downloads/qgis-archive-keyring.gpg && \
     touch /etc/apt/sources.list.d/qgis.sources && \
     echo 'Types: deb deb-src' | sudo tee -a /etc/apt/sources.list.d/qgis.sources && \
     echo 'URIs: https://qgis.org/ubuntugis' | sudo tee -a /etc/apt/sources.list.d/qgis.sources && \
-    echo 'Suites: 'lsb_release -c -s | sudo tee -a /etc/apt/sources.list.d/qgis.sources && \
+    echo 'Suites: '$(lsb_release -c -s) | sudo tee -a /etc/apt/sources.list.d/qgis.sources && \
     echo 'Architectures: '$(dpkg --print-architecture) | sudo tee -a /etc/apt/sources.list.d/qgis.sources && \
     echo 'Components: main' | sudo tee -a /etc/apt/sources.list.d/qgis.sources && \
     echo 'Signed-By: '$KEYRING | sudo tee -a /etc/apt/sources.list.d/qgis.sources && \
-    sudo apt update && \
-    sudo apt upgrade -y && \
-    sudo apt -y install qgis qgis-dev qgis-plugin-grass qgis-dev    
+    LASTSUPPORTED=focal && \
+    KEYRING=/usr/share/keyrings/ubuntugis-archive-keyring.gpg && \
+    sudo gpg --no-default-keyring --keyring $KEYRING --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 6B827C12C2D425E227EDCA75089EBE08314DF160 && \
+    echo 'Types: deb deb-src' | sudo tee -a /etc/apt/sources.list.d/ubuntugis-stable.sources && \
+    echo 'URIs: https://ppa.launchpadcontent.net/ubuntugis/ppa/ubuntu' | sudo tee -a /etc/apt/sources.list.d/ubuntugis-stable.sources && \
+    echo 'Suites: '$LASTSUPPORTED | sudo tee -a /etc/apt/sources.list.d/ubuntugis-stable.sources && \
+    echo 'Architectures: '$(dpkg --print-architecture) | sudo tee -a /etc/apt/sources.list.d/ubuntugis-stable.sources && \
+    echo 'Components: main' | sudo tee -a /etc/apt/sources.list.d/ubuntugis-stable.sources && \
+    echo 'Signed-By: '$KEYRING | sudo tee -a /etc/apt/sources.list.d/ubuntugis-stable.sources && \
+    echo 'Types: deb deb-src' | sudo tee -a /etc/apt/sources.list.d/ubuntugis-unstable.sources && \
+    echo 'URIs:https://ppa.launchpadcontent.net/ubuntugis/ubuntugis-unstable/ubuntu' | sudo tee -a /etc/apt/sources.list.d/ubuntugis-unstable.sources && \
+    echo 'Suites: '$(lsb_release -c -s)| sudo tee -a /etc/apt/sources.list.d/ubuntugis-unstable.sources && \
+    echo 'Architectures: '$(dpkg --print-architecture) | sudo tee -a /etc/apt/sources.list.d/ubuntugis-unstable.sources && \
+    echo 'Components: main' | sudo tee -a /etc/apt/sources.list.d/ubuntugis-unstable.sources && \
+    echo 'Signed-By: '$KEYRING | sudo tee -a /etc/apt/sources.list.d/ubuntugis-unstable.sources
 
-RUN apt-get clean autoclean && \
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections && \
+    apt-get update && \
+    apt-get -y -q install --no-install-recommends wget software-properties-common build-essential ca-certificates python3-pip dialog apt-utils && \
+    sudo apt update && \
+    sudo apt upgrade -y -q && \
+    sudo apt -y -q install qgis qgis-dev qgis-plugin-grass && \
+    apt-get clean autoclean && \
     apt-get autoremove --yes && \
     rm -rf /var/lib/apt/lists/*
 
