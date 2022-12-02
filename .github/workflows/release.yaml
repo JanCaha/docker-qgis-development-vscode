@@ -16,7 +16,7 @@ jobs:
     steps:
 
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -25,14 +25,14 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
             
       - name: Build and push Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           push: true
           tags: cahik/vscode-ubuntu-qgis-testing:v2
       
       - name: Build and push Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           file: mapshaper/Dockerfile
           context: .
